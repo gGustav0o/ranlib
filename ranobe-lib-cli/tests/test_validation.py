@@ -7,7 +7,9 @@ from ranobe_lib.domain.errors import (
     DuplicateCategoryName,
     DuplicateItemKey,
     InvalidCategoriesCollection,
+    InvalidCategoryName,
     InvalidItemsCollection,
+    InvalidWorkKey,
     NonCanonicalParts,
 )
 from ranobe_lib.domain.model import Category, Item, Library
@@ -43,6 +45,15 @@ class ValidateLibraryTest(unittest.TestCase):
 
         self.assertEqual(result, Err(InvalidCategoriesCollection(categories)))
 
+    def test_stops_after_an_invalid_category_name(self) -> None:
+        invalid_name: object = []
+        category = Category(invalid_name)  # type: ignore[arg-type]
+        library = Library(categories=(category,))
+
+        result = validate_library(library)
+
+        self.assertEqual(result, Err(InvalidCategoryName(invalid_name)))
+
     def test_rejects_a_mutable_items_collection(self) -> None:
         items = [Item("overlord", "Overlord", (1,))]
         category = Category("on-hand", items)  # type: ignore[arg-type]
@@ -54,6 +65,15 @@ class ValidateLibraryTest(unittest.TestCase):
             result,
             Err(InvalidItemsCollection(category="on-hand", value=items)),
         )
+
+    def test_stops_after_an_invalid_item_key(self) -> None:
+        invalid_key: object = []
+        item = Item(invalid_key, "Overlord", (1,))  # type: ignore[arg-type]
+        library = Library(categories=(Category("on-hand", (item,)),))
+
+        result = validate_library(library)
+
+        self.assertEqual(result, Err(InvalidWorkKey(invalid_key)))
 
     def test_rejects_duplicate_category_names(self) -> None:
         library = Library(
