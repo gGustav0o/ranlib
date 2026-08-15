@@ -32,6 +32,11 @@ class UnknownCategory(DomainError):
 
 
 @dataclass(frozen=True, slots=True)
+class SameCategoryMove(DomainError):
+    category: CategoryName
+
+
+@dataclass(frozen=True, slots=True)
 class InvalidItemsCollection(DomainError):
     category: CategoryName
     value: object
@@ -55,6 +60,12 @@ class MissingTitle(DomainError):
 
 @dataclass(frozen=True, slots=True)
 class DuplicateItemKey(DomainError):
+    category: CategoryName
+    key: WorkKey
+
+
+@dataclass(frozen=True, slots=True)
+class UnknownItem(DomainError):
     category: CategoryName
     key: WorkKey
 
@@ -87,3 +98,10 @@ class NonCanonicalParts(DomainError):
     key: WorkKey
     actual: object
     expected: Parts
+
+
+@dataclass(frozen=True, slots=True)
+class MissingParts(DomainError):
+    category: CategoryName
+    key: WorkKey
+    parts: Parts
