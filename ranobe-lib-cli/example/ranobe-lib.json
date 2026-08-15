@@ -1,0 +1,36 @@
+[
+    {
+        "category": "on-hand",
+        "items": [
+            {
+                "key": "overlord",
+                "title": "Overlord",
+                "parts": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ]
+            },
+            {
+                "key": "sao",
+                "title": "Sword Art Online",
+                "parts": [
+                    1,
+                    2,
+                    4
+                ]
+            }
+        ]
+    },
+    {
+        "category": "required",
+        "items": []
+    },
+    {
+        "category": "absolutely-necessary",
+        "items": []
+    }
+]
