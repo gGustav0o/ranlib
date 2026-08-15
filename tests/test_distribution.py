@@ -18,6 +18,7 @@ class DistributionContractTest(unittest.TestCase):
             (_PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
         )
 
+        self.assertEqual(configuration["project"]["name"], "ranobe-lib")
         self.assertEqual(
             configuration["project"]["scripts"]["ranobe-lib"],
             "ranobe_lib.cli.main:main",

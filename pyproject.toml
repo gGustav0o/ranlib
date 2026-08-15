@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ranobe-lib-cli"
+name = "ranobe-lib"
 version = "0.1.0"
 description = "Manage categorized ranobe volumes in a human-readable JSON file."
 readme = "README.md"
