@@ -52,7 +52,7 @@ def _render_category(category: Category) -> str:
 
 def _render_item(item: Item) -> str:
     parts = ", ".join(str(part) for part in item.parts)
-    return f"{item.title}\n{parts}
+    return f"{item.title}\n{parts}"
 
 
 def _with_final_newline(text: str) -> str:
