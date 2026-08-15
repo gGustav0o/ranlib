@@ -12,6 +12,7 @@ from ranobe_lib.cli.model import (
 )
 from ranobe_lib.domain.model import Category, Item
 
+_ITEM_SEPARATOR = "-----"
 
 def render_output(output: CliOutput) -> str:
     """Render a successful CLI value without writing to a stream."""
@@ -39,17 +40,19 @@ def _render_categories(categories: tuple[Category, ...]) -> str:
 
 
 def _render_category(category: Category) -> str:
-    lines = [f"{category.name}:"]
     if not category.items:
-        lines.append("  (empty)")
-    else:
-        lines.extend(_render_item(item) for item in category.items)
-    return "\n".join(lines)
+        return f"{category.name}:\n\n(empty)"
+
+    items = f"\n{_ITEM_SEPARATOR}\n".join(
+        _render_item(item) for item in category.items
+    )
+
+    return f"{category.name}:\n\n{items}"
 
 
 def _render_item(item: Item) -> str:
     parts = ", ".join(str(part) for part in item.parts)
-    return f"  {item.key} | {item.title} | volumes: {parts}"
+    return f"{item.title}\n{parts}
 
 
 def _with_final_newline(text: str) -> str:

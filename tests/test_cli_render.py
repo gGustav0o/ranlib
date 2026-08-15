@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+
 from pathlib import Path
 
 from ranobe_lib.cli.errors import CliParseError
@@ -24,14 +25,20 @@ class CliRenderTest(unittest.TestCase):
     def test_renders_category_names_one_per_line(self) -> None:
         output = CategoriesListed(("on-hand", "required"))
 
-        self.assertEqual(render_output(output), "on-hand\nrequired\n")
+        self.assertEqual(
+            render_output(output),
+            "on-hand\nrequired\n",
+        )
 
     def test_renders_items_without_hiding_their_categories(self) -> None:
         output = ItemsListed(
             (
                 Category(
                     "on-hand",
-                    (Item("sao", "Sword Art Online", (1, 2)),),
+                    (
+                        Item("sao", "Sword Art Online", (1, 2)),
+                        Item("overlord", "Overlord", (5, 6, 7)),
+                    ),
                 ),
                 Category("required"),
             )
@@ -41,18 +48,30 @@ class CliRenderTest(unittest.TestCase):
             render_output(output),
             (
                 "on-hand:\n"
-                "  sao | Sword Art Online | volumes: 1, 2\n"
+                "\n"
+                "Sword Art Online\n"
+                "1, 2\n"
+                "-----\n"
+                "Overlord\n"
+                "5, 6, 7\n"
                 "\n"
                 "required:\n"
-                "  (empty)\n"
+                "\n"
+                "(empty)\n"
             ),
         )
 
     def test_renders_mutation_completion(self) -> None:
-        self.assertEqual(render_output(CommandCompleted()), "Done.\n")
+        self.assertEqual(
+            render_output(CommandCompleted()),
+            "Done.\n",
+        )
 
     def test_renders_parse_context_and_message(self) -> None:
-        error = CliParseError("missing command", "usage: ranobe-lib COMMAND\n")
+        error = CliParseError(
+            "missing command",
+            "usage: ranobe-lib COMMAND\n",
+        )
 
         self.assertEqual(
             render_parse_error(error),
