@@ -1,12 +1,5 @@
 # ranobe-lib
 
-`ranobe-lib` is a small command-line application for tracking ranobe volumes
-across a fixed set of categories. The library is stored as deterministic,
-human-readable UTF-8 JSON.
-
-The application has no third-party runtime dependencies and requires Python
-3.11 or newer.
-
 ## Installation
 
 Install the project from its root directory:
