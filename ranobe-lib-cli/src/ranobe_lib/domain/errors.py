@@ -32,6 +32,16 @@ class UnknownCategory(DomainError):
 
 
 @dataclass(frozen=True, slots=True)
+class InvalidCategorySelection(DomainError):
+    value: object
+
+
+@dataclass(frozen=True, slots=True)
+class DuplicateCategorySelection(DomainError):
+    name: CategoryName
+
+
+@dataclass(frozen=True, slots=True)
 class SameCategoryMove(DomainError):
     category: CategoryName
 
