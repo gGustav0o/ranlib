@@ -44,6 +44,14 @@ ranobe-lib list-items
 ranobe-lib list-items --category on-hand --category required
 ```
 
+Search item keys and titles in every category, or restrict the search to one
+or more categories:
+
+```console
+ranobe-lib search-items overlord
+ranobe-lib search-items "Sword Art" --category on-hand
+```
+
 Add volumes to an existing item:
 
 ```console

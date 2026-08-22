@@ -10,6 +10,7 @@ from ranobe_lib.application.commands import (
     MoveParts,
     RemoveItem,
     RemoveParts,
+    SearchItems,
 )
 from ranobe_lib.application.ports import LoadLibrary, SaveLibrary
 from ranobe_lib.domain.errors import DomainError
@@ -22,6 +23,10 @@ from ranobe_lib.domain.operations import (
 )
 from ranobe_lib.domain.queries import list_category_names, select_categories
 from ranobe_lib.domain.result import Err, Ok, Result
+from ranobe_lib.domain.search import (
+    CategoryMatches,
+    search_items as search_domain_items,
+)
 
 
 ValueT = TypeVar("ValueT")
@@ -48,6 +53,21 @@ def list_items(
     """Load and select categories without flattening their items."""
 
     query = partial(select_categories, categories=command.categories)
+    return _query_library(load, query)
+
+
+def search_items(
+    command: SearchItems,
+    *,
+    load: LoadLibrary[LoadErrorT],
+) -> Result[tuple[CategoryMatches, ...], LoadErrorT | DomainError]:
+    """Load the library and find matching items in selected categories."""
+
+    query = partial(
+        search_domain_items,
+        text=command.text,
+        categories=command.categories,
+    )
     return _query_library(load, query)
 
 
@@ -173,4 +193,5 @@ __all__ = (
     "move_parts",
     "remove_item",
     "remove_parts",
+    "search_items",
 )

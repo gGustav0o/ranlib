@@ -8,6 +8,7 @@ from ranobe_lib.application.commands import (
     MoveParts,
     RemoveItem,
     RemoveParts,
+    SearchItems,
 )
 from ranobe_lib.application.services import (
     add_parts,
@@ -16,10 +17,12 @@ from ranobe_lib.application.services import (
     move_parts,
     remove_item,
     remove_parts,
+    search_items,
 )
 from ranobe_lib.domain.errors import MissingParts
 from ranobe_lib.domain.model import Category, Item, Library
 from ranobe_lib.domain.result import Err, Ok
+from ranobe_lib.domain.search import CategoryMatches
 
 
 class ApplicationServicesTest(unittest.TestCase):
@@ -58,6 +61,25 @@ class ApplicationServicesTest(unittest.TestCase):
             result,
             Ok((self.library.categories[1], self.library.categories[0])),
         )
+
+    def test_searches_items_without_a_save_effect(self) -> None:
+        result = search_items(
+            SearchItems("LORD", ("on-hand",)),
+            load=self.load,
+        )
+
+        self.assertEqual(
+            result,
+            Ok(
+                (
+                    CategoryMatches(
+                        "on-hand",
+                        (self.library.categories[0].items[0],),
+                    ),
+                )
+            ),
+        )
+        self.assertEqual(self.saved, [])
 
     def test_adds_parts_and_saves_the_result_once(self) -> None:
         result = add_parts(

@@ -25,6 +25,14 @@ class ListItems:
 
 
 @dataclass(frozen=True, slots=True)
+class SearchItems:
+    """Request items whose key or title contains the search text."""
+
+    text: str
+    categories: tuple[CategoryName, ...] | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class AddParts:
     """
     Add parts of a work to a category.
@@ -72,6 +80,7 @@ class MoveParts:
 Command: TypeAlias = (
     ListCategories
     | ListItems
+    | SearchItems
     | AddParts
     | RemoveParts
     | RemoveItem

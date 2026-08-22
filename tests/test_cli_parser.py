@@ -10,6 +10,7 @@ from ranobe_lib.application.commands import (
     MoveParts,
     RemoveItem,
     RemoveParts,
+    SearchItems,
 )
 from ranobe_lib.cli.errors import CliParseError
 from ranobe_lib.cli.model import HelpRequested, Invocation
@@ -52,6 +53,28 @@ class CliParserTest(unittest.TestCase):
                 Invocation(
                     Path("custom.json"),
                     ListItems(("required", "on-hand")),
+                )
+            ),
+        )
+
+    def test_builds_a_search_with_selected_categories(self) -> None:
+        result = parse_invocation(
+            (
+                "search-items",
+                "Sword",
+                "--category",
+                "required",
+                "--category",
+                "on-hand",
+            )
+        )
+
+        self.assertEqual(
+            result,
+            Ok(
+                Invocation(
+                    Path("ranobe-lib.json"),
+                    SearchItems("Sword", ("required", "on-hand")),
                 )
             ),
         )

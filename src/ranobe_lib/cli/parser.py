@@ -13,6 +13,7 @@ from ranobe_lib.application.commands import (
     MoveParts,
     RemoveItem,
     RemoveParts,
+    SearchItems,
 )
 from ranobe_lib.cli.errors import CliParseError
 from ranobe_lib.cli.model import HelpRequested, Invocation, ParsedInvocation
@@ -101,6 +102,7 @@ def _build_parser() -> argparse.ArgumentParser:
 def _add_commands(subparsers: _Subparsers) -> None:
     _add_list_categories(subparsers)
     _add_list_items(subparsers)
+    _add_search_items(subparsers)
     _add_add_parts(subparsers)
     _add_remove_parts(subparsers)
     _add_remove_item(subparsers)
@@ -139,6 +141,20 @@ def _add_list_categories(subparsers: _Subparsers) -> None:
 
 def _add_list_items(subparsers: _Subparsers) -> None:
     parser = _add_command(subparsers, "list-items", "List categorized items.")
+    _add_category_selection(parser)
+
+
+def _add_search_items(subparsers: _Subparsers) -> None:
+    parser = _add_command(
+        subparsers,
+        "search-items",
+        "Search categorized items by key or title.",
+    )
+    parser.add_argument("text", metavar="TEXT", help="substring to find")
+    _add_category_selection(parser)
+
+
+def _add_category_selection(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-c",
         "--category",
@@ -208,8 +224,21 @@ def _build_list_categories(namespace: argparse.Namespace) -> Command:
 
 
 def _build_list_items(namespace: argparse.Namespace) -> Command:
+    return ListItems(_selected_categories(namespace))
+
+
+def _build_search_items(namespace: argparse.Namespace) -> Command:
+    return SearchItems(
+        text=namespace.text,
+        categories=_selected_categories(namespace),
+    )
+
+
+def _selected_categories(
+    namespace: argparse.Namespace,
+) -> tuple[str, ...] | None:
     categories = namespace.categories
-    return ListItems(None if categories is None else tuple(categories))
+    return None if categories is None else tuple(categories)
 
 
 def _build_add_parts(namespace: argparse.Namespace) -> Command:
@@ -245,6 +274,7 @@ def _build_move_parts(namespace: argparse.Namespace) -> Command:
 _COMMAND_BUILDERS: dict[str, _CommandBuilder] = {
     "list-categories": _build_list_categories,
     "list-items": _build_list_items,
+    "search-items": _build_search_items,
     "add-parts": _build_add_parts,
     "remove-parts": _build_remove_parts,
     "remove-item": _build_remove_item,

@@ -3,15 +3,22 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from ranobe_lib.application.commands import AddParts, ListCategories, ListItems
+from ranobe_lib.application.commands import (
+    AddParts,
+    ListCategories,
+    ListItems,
+    SearchItems,
+)
 from ranobe_lib.cli.model import (
     CategoriesListed,
     CommandCompleted,
     ItemsListed,
+    SearchResultsFound,
 )
 from ranobe_lib.cli.runner import execute_command
 from ranobe_lib.domain.model import Category, Item, Library
 from ranobe_lib.domain.result import Err, Ok
+from ranobe_lib.domain.search import CategoryMatches
 from ranobe_lib.infrastructure.store_errors import LibraryReadError
 
 
@@ -60,6 +67,28 @@ class CliRunnerTest(unittest.TestCase):
                 )
             ),
         )
+
+    def test_maps_a_search_query_to_a_cli_value(self) -> None:
+        result = execute_command(
+            SearchItems("ART", ("on-hand",)),
+            load=self.load,
+            save=self.save,
+        )
+
+        self.assertEqual(
+            result,
+            Ok(
+                SearchResultsFound(
+                    (
+                        CategoryMatches(
+                            "on-hand",
+                            (self.library.categories[0].items[0],),
+                        ),
+                    )
+                )
+            ),
+        )
+        self.assertEqual(self.saved, [])
 
     def test_maps_a_successful_mutation_to_completion(self) -> None:
         result = execute_command(

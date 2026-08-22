@@ -64,6 +64,11 @@ class InvalidTitle(DomainError):
 
 
 @dataclass(frozen=True, slots=True)
+class InvalidSearchText(DomainError):
+    value: object
+
+
+@dataclass(frozen=True, slots=True)
 class MissingTitle(DomainError):
     key: WorkKey
 

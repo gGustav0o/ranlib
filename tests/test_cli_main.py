@@ -87,6 +87,43 @@ class CliMainTest(unittest.TestCase):
         self.assertEqual(self.stderr.getvalue(), "")
         self.assertEqual(loaded.categories[0].items[0].parts, (1, 2))
 
+    def test_searches_json_items_within_selected_categories(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "library.json"
+            library = Library(
+                (
+                    Category(
+                        "on-hand",
+                        (Item("sao", "Sword Art Online", (1,)),),
+                    ),
+                    Category(
+                        "required",
+                        (Item("artbook", "Manga Guide", (2,)),),
+                    ),
+                )
+            )
+            path.write_text(dumps_library(library).value, encoding="utf-8")
+
+            status = main(
+                (
+                    "--file",
+                    str(path),
+                    "search-items",
+                    "ART",
+                    "--category",
+                    "on-hand",
+                ),
+                stdout=self.stdout,
+                stderr=self.stderr,
+            )
+
+        self.assertEqual(status, 0)
+        self.assertEqual(
+            self.stdout.getvalue(),
+            "on-hand:\n\nSword Art Online\n1\n",
+        )
+        self.assertEqual(self.stderr.getvalue(), "")
+
 
 if __name__ == "__main__":
     unittest.main()

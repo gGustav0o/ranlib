@@ -9,14 +9,16 @@ from ranobe_lib.cli.model import (
     CategoriesListed,
     CommandCompleted,
     ItemsListed,
+    SearchResultsFound,
 )
 from ranobe_lib.cli.render import (
     render_execution_error,
     render_output,
     render_parse_error,
 )
-from ranobe_lib.domain.errors import InvalidPartNumber
+from ranobe_lib.domain.errors import InvalidPartNumber, InvalidSearchText
 from ranobe_lib.domain.model import Category, Item
+from ranobe_lib.domain.search import CategoryMatches
 from ranobe_lib.infrastructure.json_errors import InvalidJsonValue
 from ranobe_lib.infrastructure.store_errors import InvalidLibraryFile
 
@@ -61,6 +63,27 @@ class CliRenderTest(unittest.TestCase):
             ),
         )
 
+    def test_renders_search_results_with_the_shared_item_format(self) -> None:
+        output = SearchResultsFound(
+            (
+                CategoryMatches(
+                    "on-hand",
+                    (Item("sao", "Sword Art Online", (1, 2)),),
+                ),
+            )
+        )
+
+        self.assertEqual(
+            render_output(output),
+            "on-hand:\n\nSword Art Online\n1, 2\n",
+        )
+
+    def test_renders_an_explicit_empty_search_result(self) -> None:
+        self.assertEqual(
+            render_output(SearchResultsFound(())),
+            "No matches.\n",
+        )
+
     def test_renders_mutation_completion(self) -> None:
         self.assertEqual(
             render_output(CommandCompleted()),
@@ -94,6 +117,12 @@ class CliRenderTest(unittest.TestCase):
                 "At $[0].items[0].parts[1]: Volume number must be a "
                 "positive integer, got True.\n"
             ),
+        )
+
+    def test_renders_an_invalid_search_text(self) -> None:
+        self.assertEqual(
+            render_execution_error(InvalidSearchText(" ")),
+            "error: Search text must be a non-blank string, got ' '.\n",
         )
 
 

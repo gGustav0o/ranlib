@@ -15,6 +15,7 @@ from ranobe_lib.domain.errors import (
     InvalidItemsCollection,
     InvalidPartNumber,
     InvalidPartsCollection,
+    InvalidSearchText,
     InvalidTitle,
     InvalidWorkKey,
     MissingParts,
@@ -110,6 +111,11 @@ def _describe_invalid_key(error: InvalidWorkKey) -> str:
 @describe_error.register
 def _describe_invalid_title(error: InvalidTitle) -> str:
     return f"Title for key {error.key!r} must be non-blank, got {error.value!r}."
+
+
+@describe_error.register
+def _describe_invalid_search_text(error: InvalidSearchText) -> str:
+    return f"Search text must be a non-blank string, got {error.value!r}."
 
 
 @describe_error.register

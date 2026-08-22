@@ -13,6 +13,7 @@ from ranobe_lib.application.commands import (
     MoveParts,
     RemoveItem,
     RemoveParts,
+    SearchItems,
 )
 from ranobe_lib.application.ports import LoadLibrary, SaveLibrary
 from ranobe_lib.cli.errors import CliExecutionError
@@ -22,6 +23,7 @@ from ranobe_lib.cli.model import (
     CommandCompleted,
     Invocation,
     ItemsListed,
+    SearchResultsFound,
 )
 from ranobe_lib.domain.model import Library
 from ranobe_lib.domain.result import Err, Ok, Result
@@ -37,7 +39,7 @@ from ranobe_lib.infrastructure.store_errors import (
 
 ValueT = TypeVar("ValueT")
 ErrorT = TypeVar("ErrorT")
-QueryCommand: TypeAlias = ListCategories | ListItems
+QueryCommand: TypeAlias = ListCategories | ListItems | SearchItems
 MutationCommand: TypeAlias = AddParts | RemoveParts | RemoveItem | MoveParts
 
 
@@ -57,7 +59,7 @@ def execute_command(
 ) -> Result[CliOutput, CliExecutionError]:
     """Dispatch a closed application command without performing presentation."""
 
-    if isinstance(command, (ListCategories, ListItems)):
+    if isinstance(command, (ListCategories, ListItems, SearchItems)):
         return _execute_query(command, load)
     return _execute_mutation(command, load, save)
 
@@ -72,6 +74,9 @@ def _execute_query(
     if isinstance(command, ListItems):
         result = services.list_items(command, load=load)
         return _map_output(result, ItemsListed)
+    if isinstance(command, SearchItems):
+        result = services.search_items(command, load=load)
+        return _map_output(result, SearchResultsFound)
     assert_never(command)
 
 

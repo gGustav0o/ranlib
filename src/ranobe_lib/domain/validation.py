@@ -11,6 +11,7 @@ from ranobe_lib.domain.errors import (
     InvalidCategoriesCollection,
     InvalidCategoryName,
     InvalidItemsCollection,
+    InvalidSearchText,
     InvalidTitle,
     InvalidWorkKey,
     NonCanonicalParts,
@@ -44,6 +45,10 @@ def validate_title(key: WorkKey, value: object) -> Result[str, InvalidTitle]:
         value,
         lambda invalid: InvalidTitle(key=key, value=invalid),
     )
+
+
+def validate_search_text(value: object) -> Result[str, InvalidSearchText]:
+    return _validate_non_blank_string(value, InvalidSearchText)
 
 
 def validate_library(library: Library) -> Result[Library, DomainError]:

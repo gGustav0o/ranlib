@@ -9,10 +9,14 @@ from ranobe_lib.cli.model import (
     CliOutput,
     CommandCompleted,
     ItemsListed,
+    SearchResultsFound,
 )
 from ranobe_lib.domain.model import Category, Item
+from ranobe_lib.domain.search import CategoryMatches
 
 _ITEM_SEPARATOR = "-----"
+_NO_MATCHES = "No matches.\n"
+
 
 def render_output(output: CliOutput) -> str:
     """Render a successful CLI value without writing to a stream."""
@@ -21,6 +25,10 @@ def render_output(output: CliOutput) -> str:
         return _with_final_newline("\n".join(output.names))
     if isinstance(output, ItemsListed):
         return _render_categories(output.categories)
+    if isinstance(output, SearchResultsFound):
+        if not output.matches:
+            return _NO_MATCHES
+        return _render_categories(output.matches)
     if isinstance(output, CommandCompleted):
         return "Done.\n"
     assert_never(output)
@@ -34,12 +42,14 @@ def render_execution_error(error: CliExecutionError) -> str:
     return f"error: {describe_error(error)}\n"
 
 
-def _render_categories(categories: tuple[Category, ...]) -> str:
+def _render_categories(
+    categories: tuple[Category, ...] | tuple[CategoryMatches, ...],
+) -> str:
     text = "\n\n".join(_render_category(category) for category in categories)
     return _with_final_newline(text)
 
 
-def _render_category(category: Category) -> str:
+def _render_category(category: Category | CategoryMatches) -> str:
     if not category.items:
         return f"{category.name}:\n\n(empty)"
 

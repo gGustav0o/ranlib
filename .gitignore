@@ -1,2 +1,27 @@
 build/
 src/ranobe_lib.egg-info/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.venv/
+venv/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# Generated tooling
+/graphify-out/
+
+# Local application data
+/ranobe-lib.json

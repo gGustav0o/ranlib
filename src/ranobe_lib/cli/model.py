@@ -6,6 +6,7 @@ from typing import TypeAlias
 
 from ranobe_lib.application.commands import Command
 from ranobe_lib.domain.model import Category, CategoryName
+from ranobe_lib.domain.search import CategoryMatches
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,11 +34,18 @@ class ItemsListed:
 
 
 @dataclass(frozen=True, slots=True)
+class SearchResultsFound:
+    matches: tuple[CategoryMatches, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class CommandCompleted:
     pass
 
 
-CliOutput: TypeAlias = CategoriesListed | ItemsListed | CommandCompleted
+CliOutput: TypeAlias = (
+    CategoriesListed | ItemsListed | SearchResultsFound | CommandCompleted
+)
 
 
 __all__ = (
@@ -48,4 +56,5 @@ __all__ = (
     "Invocation",
     "ItemsListed",
     "ParsedInvocation",
+    "SearchResultsFound",
 )
